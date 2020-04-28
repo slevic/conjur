@@ -37,6 +37,7 @@
       - [Cons](#cons-1)
   - [Version Update](#version-update)
   - [Delivery Plan](#delivery-plan)
+  - [Recommendation](#recommendation)
   
 ## Introduction
 
@@ -47,6 +48,7 @@ Currently to define an authenticator, the user needs to complete the following s
 - Understand how the authenticator policy is structured
 - Create a policy yaml file that defines the authenticator
 - Load the policy using Conjur CLI
+- Fill the authenticator policy variables with their values
 - Enable the authenticator through an environment variable or REST API call
 
 To delete an authenticator, the user needs to complete these steps.  
@@ -86,7 +88,7 @@ $ conjur config authenticator add authn-oidc/my-idp --provider-uri my-uri --id-t
 
 #### Functionality
 
-Deletes an existing authenticator in Conjur. Deletes the authenticator policy.
+Deletes an existing authenticator in Conjur. Deletes the authenticator policy and deletes the authenticator from the enabled/disabled authenticators list.
 
 #### Synopsis
 
@@ -118,7 +120,7 @@ $ conjur config authenticator update authn-oidc/my-idp --provider-uri new-uri
 
 #### Functionality
 
-Enables an authenticator in Conjur.
+Enables an authenticator in the Conjur database (can be overriden by environment variable).
 
 #### Synopsis
 
@@ -134,7 +136,7 @@ $ conjur config authenticator enable authn-oidc/my-idp
 
 #### Functionality
 
-Disables an authenticator in Conjur.
+Disables an authenticator in the Conjur database (can be overriden by environment variable).
 
 #### Synopsis
 
@@ -149,7 +151,7 @@ $ conjur config authenticator disable authn-oidc/my-idp
 ## Backwards Compatibility
 
 - The authenticators keep their same structure in Conjur. Users could still manage them in the way it's done today.  
-- These CLI commands are uniting policy loads and variable updates into a single step, therefore running the commands requires permissions to both load a policy under the `conjur` policy and to updated the variables in that policy.
+- These CLI commands are uniting policy loads and variable updates into a single step, therefore running the commands requires permissions to both load a policy under the `conjur` policy and to update the variables in that policy.
 
 ## Performance
 
@@ -214,7 +216,7 @@ Alternative 2 requires only CLI release.
 
 ## Delivery Plan
 
-High level delivery plan for **option 1** will include the following steps:
+High level delivery plan for **alternative 1** will include the following steps:
 
 | Functionality                     | Dev    | Tests  |
 |-----------------------------------|--------|--------|
@@ -231,7 +233,7 @@ High level delivery plan for **option 1** will include the following steps:
   
 **Total: 35 days**
 
-High level delivery plan for **option 2** will include the following steps:
+High level delivery plan for **alternative 2** will include the following steps:
 
 | Functionality                     | Dev    | Tests  |
 |-----------------------------------|--------|--------|
@@ -245,3 +247,7 @@ High level delivery plan for **option 2** will include the following steps:
 | Version update                    | 1 day  | -      |
   
 **Total: 27 days**
+
+## Recommendation
+
+We should develop alternative 1 (server side). The busines logic of the product should be located on the server side and not on the client side. The effort difference is not significant, but the value it offers over alternative 2 is.

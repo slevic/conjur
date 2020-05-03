@@ -27,7 +27,6 @@
   - [Performance](#performance)
   - [Security](#security)
   - [Documentation](#documentation)
-  - [Drawbacks](#drawbacks)
   - [Implementation Options](#implementation-options)
     - [Alternative 1 - Server Side](#alternative-1---server-side)
       - [Pros](#pros)
@@ -165,11 +164,6 @@ No security implications. These new CLI commands perform the same action, with a
 
 We will need to update the docs of every authenticator, to specify how to use the new CLI commands. In addition, we will need to add documentation for enabling/disabling authenticators.
 
-## Drawbacks
-
-Every new authenticator that would be created for Conjur, should now have a corresponding Conjur CLI command support as
-well. It's not mandatory but preferred.
-
 ## Implementation Options
 
 ### Alternative 1 - Server Side
@@ -182,7 +176,7 @@ curl --request POST \
   https://conjur.mycompany.net/authn-oidc/my-authenticator/my-account
 ```
 
-The CLI will use these new APIs.
+The CLI will use these new APIs. In order for the CLI to remain up to date with the authenticator types, their required parameters and optional parameters, Conjur will expose an internal API that would provide this authenticator schema information. This API will be called by the CLI whenever this information will be needed. For example, when running `conjur config authenticator add/update {authenticator-type}/{service-id} --help`.
 
 #### Pros
 
@@ -218,20 +212,21 @@ Alternative 2 requires only CLI release.
 
 High level delivery plan for **alternative 1** will include the following steps:
 
-| Functionality                     | Dev    | Tests  |
-|-----------------------------------|--------|--------|
-| Adding authenticators in Conjur   | 5 days | 3 days |
-| Adding authenticators in CLI      | 2 days | 1 days |
-| Deleting authenticators in Conjur | 3 days | 2 days |
-| Deleting authenticators in CLI    | 1 days | 1 days |
-| Updating authenticators in Conjur | 2 days | 2 days |
-| Updating authenticators in CLI    | 1 days | 1 days |
-| Enabling authenticators in CLI    | 1 days | 2 days |
-| Disabling authenticators in CLI   | 1 days | 2 days |
-| Modify deployment examples        | 3 days | -      |
-| Documentation                     | 2 days | -      |
+| Functionality                           | Dev    | Tests  |
+|-----------------------------------------|--------|--------|
+| Adding authenticators in Conjur         | 5 days | 3 days |
+| Adding authenticators in CLI            | 2 days | 1 days |
+| Deleting authenticators in Conjur       | 3 days | 2 days |
+| Deleting authenticators in CLI          | 1 days | 1 days |
+| Updating authenticators in Conjur       | 2 days | 2 days |
+| Updating authenticators in CLI          | 1 days | 1 days |
+| Enabling authenticators in CLI          | 1 days | 2 days |
+| Disabling authenticators in CLI         | 1 days | 2 days |
+| Adding Conjur authn schema internal API | 2 days | 2 days |
+| Modify deployment examples              | 3 days | -      |
+| Documentation                           | 2 days | -      |
   
-**Total: 35 days**
+**Total: 39 days**
 
 High level delivery plan for **alternative 2** will include the following steps:
 

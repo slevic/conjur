@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Change ActiveSupport to use sha1 instead of md5
+- Set openssl version to 1.0.2
+- Enable FIPS
 
 ## [1.6.0] - 2020-04-14
 

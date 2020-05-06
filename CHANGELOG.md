@@ -15,8 +15,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Change ActiveSupport to use sha1 instead of md5
-- Set openssl version to 1.0.2
-- Enable FIPS
+- Using a new base image ruby-fips-base-image-ubuntu and ruby-fips-base-image-phusion
+  The new image consists of openssl 1.0.2u which is FIPS complaint 
+- Enable FIPS. The enabling is done in fips.rb with the OpenSSL.fips_mode variable
 
 ## [1.6.0] - 2020-04-14
 

@@ -1,4 +1,6 @@
 module AuthnK8sWorld
+  Err ||= Errors::Authentication::AuthnK8s
+
   def test_namespace
     ENV["CONJUR_AUTHN_K8S_TEST_NAMESPACE"]
   end
@@ -44,19 +46,19 @@ module AuthnK8sWorld
   # get pod cert
   def pod_certificate
     response = nil
-    retries = 10
-    count = 0
-    success = false
+    retries  = 10
+    count    = 0
+    success  = false
 
     while count < retries
       puts "Waiting for client cert to be available (Attempt #{count + 1} of #{retries})"
 
       pod_metadata = @pod.metadata
-      response = kubectl_exec.execute(
+      response     = kubectl_exec.execute(
         k8s_object_lookup: Authentication::AuthnK8s::K8sObjectLookup.new,
-        pod_namespace: pod_metadata.namespace,
-        pod_name: pod_metadata.name,
-        cmds: [ "cat", "/etc/conjur/ssl/client.pem" ]
+        pod_namespace:     pod_metadata.namespace,
+        pod_name:          pod_metadata.name,
+        cmds:              ["cat", "/etc/conjur/ssl/client.pem"]
       )
 
       if !response.nil? && response[:error].empty? && !response[:stdout].to_s.strip.empty?
@@ -79,8 +81,8 @@ module AuthnK8sWorld
   # Find pod matching label selector.
   def find_matching_pod(label_selector)
     @pod = k8s_object_lookup
-      .pods_by_label(label_selector, namespace)
-      .first
+             .pods_by_label(label_selector, namespace)
+             .first
 
     err = "No pod found matching label selector: #{label_selector.inspect}"
     raise err unless @pod
@@ -99,7 +101,9 @@ module AuthnK8sWorld
       begin
         resolver.validate_pod
         true
-      rescue Errors::Authentication::AuthnK8s::ValidationError
+      rescue Err::PodNameMismatchError,
+        Err::PodRelationMismatchError,
+        Err::PodMissingRelationError
         false
       end
     end
@@ -119,10 +123,10 @@ module AuthnK8sWorld
     subject = OpenSSL::X509::Name.new(
       [
         ['CN', common_name],
-        # ['O', id],
-        # ['C', id],
-        # ['ST', id],
-        # ['L', id]
+      # ['O', id],
+      # ['C', id],
+      # ['ST', id],
+      # ['L', id]
       ]
     )
 

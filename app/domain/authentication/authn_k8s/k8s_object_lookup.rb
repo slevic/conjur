@@ -36,14 +36,13 @@ module Authentication
       end
 
       def ca_cert
-        cert = K8sContextValue.get(
+        K8sContextValue.get(
           @webservice,
           SERVICEACCOUNT_CA_PATH,
           VARIABLE_CA_CERT
-        )
-
-        raise Err::MissingCertificate if cert.blank?
-        cert
+        ).tap do |cert|
+          raise Err::MissingCertificate if cert.blank?
+        end
       end
 
       def options

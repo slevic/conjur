@@ -151,8 +151,6 @@ module Loader
       end
     end
 
-    protected
-
     # Delete rows in the existing policy which do not exist in the new policy.
     # Matching rows are selected by primary keys only, using a LEFT JOIN between the
     # existing policy and the new policy.

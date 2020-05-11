@@ -468,6 +468,8 @@ detectors:
     - conjur_api
     - RestHelpers
     - CAHelpers
+    - PoliciesController#create_roles
+    - PoliciesController#actor_roles
 
   LongParameterList:
     exclude:

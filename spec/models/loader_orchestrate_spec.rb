@@ -21,16 +21,15 @@ describe Loader::Orchestrate do
       version.policy = resource_policy
       version.role = role_user_admin
       version.policy_text = File.read(policy_path(path))
-      version.perform_automatic_deletion = perform_automatic_deletion
       version.delete_permitted = delete_permitted
-      version.update_permitted = update_permitted
       version.validate
       expect(version.errors.to_a).to eq([])
       expect(version.valid?).to be_truthy
       version.save
     end
-    Loader::Orchestrate.new(version).tap do |loader|
-      loader.load
+    
+    Loader::ReplacePolicy.from_policy(version).tap do |policy_action|
+      policy_action.call
     end
   end
 
@@ -53,8 +52,6 @@ describe Loader::Orchestrate do
     Loader::Orchestrate.table_data 'rspec', "#{schemata.primary_schema}__"
   }
   let(:delete_permitted) { true }
-  let(:update_permitted) { true }
-  let(:perform_automatic_deletion) { true }
 
   context "with a minimal base policy" do
     let(:base_policy_path) { 'empty.yml' }

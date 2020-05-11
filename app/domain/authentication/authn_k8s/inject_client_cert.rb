@@ -10,11 +10,12 @@ module Authentication
 
     InjectClientCert ||= CommandClass.new(
       dependencies: {
-        logger: Rails.logger,
-        resource_class: Resource,
-        conjur_ca_repo: Repos::ConjurCA,
-        kubectl_exec: KubectlExec,
-        validate_pod_request: ValidatePodRequest.new
+        logger:                 Rails.logger,
+        resource_class:         Resource,
+        conjur_ca_repo:         Repos::ConjurCA,
+        kubectl_exec:           KubectlExec,
+        validate_pod_request:   ValidatePodRequest.new,
+        audit_event:            ::Authentication::AuditEvent.new
       },
       inputs: %i(conjur_account service_id csr host_id_prefix)
     ) do
@@ -23,6 +24,9 @@ module Authentication
         update_csr_common_name
         validate
         install_signed_cert
+      rescue => e
+        audit_failure(e)
+        raise e
       end
 
       private
@@ -166,6 +170,21 @@ module Authentication
         annotation_name = "authentication-container-name"
         annotation = host.annotations.find { |a| a.values[:name] == "#{prefix}/#{annotation_name}" }
         annotation ? annotation[:value] : nil
+      end
+
+      def audit_failure(err)
+        authenticator_input = Authentication::AuthenticatorInput.new(
+          authenticator_name: 'authn-k8s',
+          service_id:         @service_id,
+          account:            @conjur_account,
+          username:           host_id,
+        )
+
+        @audit_event.(
+          authenticator_input: authenticator_input,
+            success: false,
+            message: err.message
+        )
       end
     end
   end
